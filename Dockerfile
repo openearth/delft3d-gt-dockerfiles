@@ -9,7 +9,8 @@ RUN yum -y update \
         && yum -y install python-pip \
         && yum -y install netcdf4-python \
         && yum -y install gcc-c++ \
-	&& yum -y install ffmpeg
+	&& yum -y install ffmpeg \
+	&& yum -y install subversion
 
 RUN mkdir -m 775 /data
 ADD requirements.txt /data/requirements.txt
