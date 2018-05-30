@@ -3,7 +3,7 @@
 # by default we're not on amazon
 # See, also for alternatives
 # http://serverfault.com/questions/462903/how-to-know-if-a-machine-is-an-ec2-instance
-EC2=0
+EC2=1
 if [ -f /sys/hypervisor/uuid ] && [ $(head -c 3 /sys/hypervisor/uuid) == "ec2" ]; then
     # introspect the machine
     EC2=1
@@ -26,7 +26,7 @@ then
         if [ "$argument" == "cleanup" ]
         then
             # synchronize directory with on s3 (make sure you provision aws command lines (pip install aws-cli))
-            aws s3 sync /data/input/ "s3://$s3bucket/data/container/files/$uuid" --exact-time
+            aws s3 sync /data/input/ "s3://$s3bucket/$uuid" --exact-time
 
             # Capture sync status
             SYNC_STATUS=$?
@@ -38,10 +38,10 @@ then
             ls -lhR /data/input/ > /data/EFStree.log
 
             # write tree log of the S3 directory
-            aws s3 ls  "s3://$s3bucket/data/container/files/$uuid" --recursive --summarize > /data/S3tree.log
+            aws s3 ls  "s3://$s3bucket/$uuid" --recursive --summarize > /data/S3tree.log
 
             # write temporary tree log of S3 simulation directory
-            aws s3 ls  "s3://$s3bucket/data/container/files/$uuid/simulation" --recursive --summarize > /tmp/S3Simulationtree.log
+            aws s3 ls  "s3://$s3bucket/$uuid/simulation" --recursive --summarize > /tmp/S3Simulationtree.log
 
             # capture number of files in the S3 Simulation directory
             J="$(grep  "^Total Objects:" /tmp/S3Simulationtree.log | grep -Eo "[0-9]+")"
@@ -59,7 +59,7 @@ then
             fi
 
             # sync logfile
-            aws s3 sync /data/ "s3://$s3bucket/data/container/files/$uuid/log" --exact-time --exclude "*" --include "*.log"
+            aws s3 sync /data/ "s3://$s3bucket/$uuid/log" --exact-time --exclude "*" --include "*.log"
 
             # remove logfile
             rm -rf /data/*.log
@@ -67,12 +67,12 @@ then
         elif [ "$argument" == "rerun" ]
         then
             # remove old backups
-            aws s3 rm "s3://$s3bucket/data/container/files/$uuid/backup/" --recursive
+            aws s3 rm "s3://$s3bucket/$uuid/backup/" --recursive
             # backup the old output except the simulation folder
-            aws s3 cp "s3://$s3bucket/data/container/files/$uuid/" "s3://$s3bucket/data/container/files/$uuid/backup/" --exclude "simulation/*" --exclude "backup/*" --recursive
+            aws s3 cp "s3://$s3bucket/$uuid/" "s3://$s3bucket/$uuid/backup/" --exclude "simulation/*" --exclude "backup/*" --recursive
             # synchronize simulation folder from s3 back to the Elastic File System. Exclude ini file, this file is generated in do_docker_create task.
             echo "sync S3 to EFS"
-            aws s3 sync "s3://$s3bucket/data/container/files/$uuid/simulation" /data/output/simulation --exclude "input.ini" --exact-time
+            aws s3 sync "s3://$s3bucket/$uuid/simulation" /data/output/simulation --exclude "input.ini" --exact-time
         fi
     done
 fi
