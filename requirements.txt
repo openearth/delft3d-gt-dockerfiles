@@ -1,11 +1,5 @@
-awscli==1.11.21
-cmocean==1.1
-configparser==3.5.0
-Cython==0.19
-mahotas==1.4.3
-Mako==1.0.6
-matplotlib==1.5.3
-numpy==1.11.0
-scikit-image==0.12.3
-netCDF4==1.1.0
-xarray==0.10.9
+awscli
+matplotlib
+numpy
+netCDF4
+xarray
