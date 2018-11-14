@@ -26,12 +26,12 @@ then
         if [ "$argument" == "cleanup" ]
         then
             # synchronize directory with on s3 (make sure you provision aws command lines (pip install aws-cli))
-            aws s3 sync /data/input/ "s3://$s3bucket/$uuid" --exact-time
+            aws s3 sync /data/input/ "s3://$s3bucket/$uuid" --exclude "*" --include "*.jpg" --exact-time
 
             # Capture sync status
             SYNC_STATUS=$?
 
-            # caputer number of files in the EFS Simulation directory 
+            # capture number of files in the EFS Simulation directory 
             I="$(find /data/input/simulation -type f | wc -l)"
 
             # write tree log of the EFS directory
@@ -63,17 +63,6 @@ then
 
             # remove logfile
             rm -rf /data/*.log
-
-        elif [ "$argument" == "rerun" ]
-        then
-            # remove old backups
-            aws s3 rm "s3://$s3bucket/$uuid/backup/" --recursive
-            # backup the old output except the simulation folder
-            aws s3 cp "s3://$s3bucket/$uuid/" "s3://$s3bucket/$uuid/backup/" --exclude "simulation/*" --exclude "backup/*" --recursive
-            # synchronize simulation folder from s3 back to the Elastic File System. Exclude ini file, this file is generated in do_docker_create task.
-            echo "sync S3 to EFS"
-            aws s3 sync "s3://$s3bucket/$uuid/simulation" /data/output/simulation --exclude "input.ini" --exact-time
-        fi
     done
 fi
 
