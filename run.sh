@@ -63,6 +63,10 @@ then
 
             # remove logfile
             rm -rf /data/*.log
+        elif [ "$argument" == "rerun" ]
+        then
+            # not implemented fot GTSM
+        fi
     done
 fi
 
