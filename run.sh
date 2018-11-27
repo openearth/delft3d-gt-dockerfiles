@@ -26,7 +26,7 @@ then
         if [ "$argument" == "cleanup" ]
         then
             # synchronize directory with on s3 (make sure you provision aws command lines (pip install aws-cli))
-            aws s3 sync /data/input/ "s3://$s3bucket/$uuid" --exclude "*" --include "*.jpg" --exact-time
+            aws s3 sync /data/input/ "s3://$s3bucket/data/dynamic/$uuid" --exclude "*" --include "*.jpg" --exact-time
 
             # Capture sync status
             SYNC_STATUS=$?
@@ -38,10 +38,10 @@ then
             ls -lhR /data/input/ > /data/EFStree.log
 
             # write tree log of the S3 directory
-            aws s3 ls  "s3://$s3bucket/$uuid" --recursive --summarize > /data/S3tree.log
+            aws s3 ls  "s3://$s3bucket/data/dynamic/$uuid" --recursive --summarize > /data/S3tree.log
 
             # write temporary tree log of S3 simulation directory
-            aws s3 ls  "s3://$s3bucket/$uuid/simulation" --recursive --summarize > /tmp/S3Simulationtree.log
+            aws s3 ls  "s3://$s3bucket/data/dynamic/$uuid/simulation" --recursive --summarize > /tmp/S3Simulationtree.log
 
             # capture number of files in the S3 Simulation directory
             J="$(grep  "^Total Objects:" /tmp/S3Simulationtree.log | grep -Eo "[0-9]+")"
@@ -59,13 +59,13 @@ then
             fi
 
             # sync logfile
-            aws s3 sync /data/ "s3://$s3bucket/$uuid/log" --exact-time --exclude "*" --include "*.log"
+            aws s3 sync /data/ "s3://$s3bucket/data/dynamic/$uuid/log" --exact-time --exclude "*" --include "*.log"
 
             # remove logfile
             rm -rf /data/*.log
         elif [ "$argument" == "rerun" ]
         then
-            echo "not implemented fot GTSM"
+            echo "not implemented for GTSM"
         fi
     done
 fi
