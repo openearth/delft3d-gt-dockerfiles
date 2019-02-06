@@ -71,6 +71,15 @@ then
             # synchronize simulation folder from s3 back to the Elastic File System. Exclude ini file, this file is generated in do_docker_create task.
             echo "sync S3 to EFS"
             aws s3 sync "s3://$s3bucket/data/dynamic/$uuid/simulation" /data/output/simulation --exclude "input.ini" --exact-time
+        
+        # synchronize in loop (use in argo sidecar)
+        elif [ "$argument" == "sync" ]
+        then
+            while true
+            do
+                aws s3 sync /data/input/ "s3://$s3bucket/data/dynamic/$uuid" --exact-time
+                sleep 10m
+            done
         fi
     done
 fi
