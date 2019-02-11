@@ -74,10 +74,11 @@ then
         
         # synchronize in loop (use in argo sidecar)
         elif [ "$argument" == "sync" ]
+            echo "sync processing images in a loop"
         then
             while true
             do
-                aws s3 sync /data/input/ "s3://$s3bucket/data/dynamic/$uuid" --exact-time
+                aws s3 sync /data/input/ "s3://$s3bucket/data/dynamic/$uuid/process" --exact-time
                 sleep 10m
             done
         fi
