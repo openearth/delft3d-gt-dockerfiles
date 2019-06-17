@@ -66,11 +66,13 @@ then
 
         elif [ "$argument" == "rerun" ]
         then
-            # backup the old output except the simulation folder
-            aws s3 cp "s3://$s3bucket/data/dynamic/$uuid/" "s3://$s3bucket/data/dynamic/$uuid/backup/$version/" --exclude "backup/*" --recursive
-            
-            # synchronize simulation folder from s3 back to the Elastic File System.
+             # synchronize simulation folder from s3 back to the Elastic File System.
             aws s3 sync "s3://$s3bucket/data/dynamic/$uuid/simulation" "/data/output/simulation" --exact-time
+
+            # make backup of old output
+            aws s3 mv "s3://$s3bucket/data/dynamic/$uuid/" "s3://$s3bucket/data/dynamic/$uuid/backup/$version/" --exclude "backup/*" --recursive
+            
+           
 
         # synchronize in loop (use in argo sidecar)
         elif [ "$argument" == "sync" ]
