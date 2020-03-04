@@ -3,3 +3,6 @@ matplotlib
 numpy
 netCDF4
 xarray
+scipy
+pandas
+fire
